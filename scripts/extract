@@ -1,0 +1,16 @@
+#!/bin/sh
+
+urls="$@"
+
+[ -d archives ] || mkdir archives
+cd archives
+for url in ${urls};do
+    u=$(echo "$url" | sed 's|.*/||g;s/\\?.*//')
+    echo "$u"
+    [ -d "$u" ] && rm -rf "$u"
+    case "$u" in
+        *.tar|*.tar.gz|*.tgz|*.txz|*.tar.xz|*.tar.bz2)
+            tar xf ../downloads/"$u"
+        ;;
+    esac
+done

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+urls="$@"
+
+[ -d downloads ] || mkdir downloads
+cd downloads
+for url in ${urls};do
+    u=$(echo "$url" | sed 's|.*/||g;s/\\?.*//')
+    echo "$url"
+    if [ ! -f "$u" ];then
+        curl -#O "$url"
+    fi
+done

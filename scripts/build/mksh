@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cd archives/mksh
+
+sh ./Build.sh -r -c lto
+install -s -D mksh "$BUILD"/bin/sh

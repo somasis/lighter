@@ -1,0 +1,11 @@
+#!/bin/sh
+
+cd archives/toybox-*
+
+make -j$J defconfig
+make -j$J toybox
+install -D toybox "$BUILD"/bin/toybox
+for bin in $("$BUILD"/bin/toybox);do
+    ln -s toybox "$BUILD"/bin/"$bin"
+done
+

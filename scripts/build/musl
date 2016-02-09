@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cd archives/musl-*
+
+./configure --prefix=/ --disable-gcc-wrapper --enable-static --disable-shared
+make -j$J
+make -j$J install DESTDIR="$BUILD"

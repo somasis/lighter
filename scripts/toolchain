@@ -1,0 +1,29 @@
+#!/bin/sh
+
+toolchain="
+    addr2line ar as c++filt dwp elfedit gprof ld nm objcopy objdump
+    ranlib readelf size strings strip
+    cc c++ cpp
+"
+
+[ -d toolchain ] || mkdir toolchain
+
+for tc in $toolchain;do
+    tc_clean=$(echo "$tc" | tr '+' 'x')
+    tc_var=$(echo "$tc_clean" | tr '[a-z]' '[A-Z]')
+    # tc_var=CC, if $CC set...
+    tc_set=$(eval echo $(echo \$$(eval echo "\$tc_var")))
+    if [ ! -z "$tc_set" ];then
+        echo "$tc_set -> $tc"
+        ln -sf $(which "$tc_set") toolchain/"$tc"
+    else
+        if [ ! -z "$CHOST" ];then
+            if which $CHOST-"$tc" >/dev/null 2>&1;then
+                echo "$CHOST-$tc -> $tc"
+                ln -sf $(which "$CHOST-$tc") toolchain/"$tc"
+            fi
+        fi
+        continue
+    fi
+done
+

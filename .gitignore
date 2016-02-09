@@ -1,0 +1,7 @@
+*.swp
+*~
+.*.kak.*
+/archives/
+/build/
+/downloads/
+/toolchain/
