@@ -8,6 +8,6 @@ for url in ${urls};do
     u=$(echo "$url" | sed 's|.*/||g;s/\\?.*//')
     echo "$url"
     if [ ! -f "$u" ];then
-        curl -#O "$url"
+        curl -L#O "$url"
     fi
 done
