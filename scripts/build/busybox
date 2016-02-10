@@ -1,0 +1,11 @@
+#!/bin/sh
+
+cd archives/busybox-*
+
+cp ../../configs/busybox ./.config
+make -j$J V=2 CC=${CC} HOSTCC=${CC}
+install -D busybox "$DESTDIR"/bin/busybox
+for bin in $("$DESTDIR"/bin/busybox --list);do
+    [ -e "$DESTDIR"/bin/"$bin" ] || ln -s busybox "$DESTDIR"/bin/"$bin"
+done
+

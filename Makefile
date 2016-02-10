@@ -17,11 +17,10 @@ BUILD			?= $(PWD)/build
 PATH			+= :$(PWD)/toolchain
 
 urls            =	\
-    http://landley.net/toybox/downloads/toybox-0.7.0.tar.gz	\
-	http://sources.voidlinux.eu/sources/mksh-R52b/mksh-R52b.tgz \
+	http://busybox.net/downloads/busybox-1.24.1.tar.bz2					\
 	https://matt.ucc.asn.au/dropbear/releases/dropbear-2015.71.tar.bz2
 
-make			= toybox mksh dropbear
+make			= busybox dropbear
 
 all:
 	@printf "lighter $(VERSION)\n\n"
