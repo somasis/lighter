@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cd archives/dropbear-*
+
+./configure --prefix=/ --sbindir=/bin --disable-{syslog,shadow,lastlog,utmp,utmpx,wtmp,wtmpx}
+make -j$J MULTI=1
+make -j$J MULTI=1 install
