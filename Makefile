@@ -68,10 +68,15 @@ clean-%:
 	@printf "cleaning archives/%s...\n" "$*"
 	rm -rf archives/"$*"*
 
-build: prepare fetch extract $(foreach m,$(make),build/.built-$(m))
+$(BUILD)/initramfs.cpio.gz:
+	cd "$(BUILD)/root" && find . -print0 | cpio --null -ov --format=newc | gzip -9 > "$(BUILD)"/initramfs.cpio.gz
+
+pack: $(BUILD)/initramfs.cpio.gz
+
+build: prepare fetch extract $(foreach m,$(make),build/.built-$(m)) pack
 
 clean:
 	rm -rf downloads archives $(BUILD) toolchain
 
-.PHONY:	clean all prepare fetch extract build
+.PHONY:	clean all prepare fetch extract build pack
 
