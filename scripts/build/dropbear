@@ -2,6 +2,13 @@
 
 cd archives/dropbear-*
 
-./configure --prefix=/ --sbindir=/bin --disable-{syslog,shadow,lastlog,utmp,utmpx,wtmp,wtmpx}
+./configure --prefix=/ --sbindir=/bin --disable-{syslog,shadow,lastlog,utmp,utmpx,wtmp,wtmpx,shared} --enable-static
 make -j$J MULTI=1
 make -j$J MULTI=1 install
+cd "$DESTDIR"/bin
+rm -f dropbear dbclient dropbearkey dropbearconvert
+for f in dropbear dbclient dropbearkey dropbearconvert ssh;do
+    ln -s dropbearmulti "$f"
+done
+cd "$DESTDIR"
+rm -rf share
