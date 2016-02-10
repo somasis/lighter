@@ -39,10 +39,11 @@ toolchain:
 #	@for d in $(dirs);do echo "mkdir -p $(BUILD)/$$d"; [ -d "$$d" ] || mkdir -p $(BUILD)/"$$d";done
 
 prepare: toolchain skel
+	@printf "making build directories...\n"
+	-mkdir -p "$(BUILD)" >/dev/null 2>&1
+	-mkdir "$(BUILD)"/root >/dev/null 2>&1
 	@printf "copying skeleton root to %s...\n" "$(BUILD)"
-	-mkdir -p "$(BUILD)"
-	-mkdir "$(BUILD)"/root
-	@cp -r skel/* "$(BUILD)"/root/
+	cp -r skel/* "$(BUILD)"/root/
 	@printf "\n"
 
 fetch: prepare
