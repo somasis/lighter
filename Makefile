@@ -10,7 +10,7 @@ export CFLAGS
 export CXXFLAGS
 export LDFLAGS
 
-JOBS			= $$(grep -c processor /proc/cpuinfo)
+JOBS			= $$(expr $$(grep -c processor /proc/cpuinfo) + 4)
 
 BUILD			?= $(PWD)/build
 
