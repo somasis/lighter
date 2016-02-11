@@ -5,9 +5,9 @@ mount -t proc proc /proc
 mount -t devtmpfs devtmpfs /dev
 mount -t sysfs sysfs /sys
 
-args=$(cat /proc/cmdline | tr ' ' '\n' | grep '.*=.*')
+args=$(tr ' ' '\n' < /proc/cmdline)
 var() {
-    echo "$args" | grep "^$1" | cut -d= -f2
+    echo "$args" | grep "^$1=" | cut -d= -f2
 }
 arg() {
     echo "$args" | grep -q "^$1$"
@@ -17,16 +17,13 @@ rescue() {
 }
 
 root=$(var root)
+init=$(var init)
+[ -z "$init" ] && init="/sbin/init"
 
-if [ -z "$root" ];then
-    echo "No root= parameter was passed to kernel. Defaulting to first non-vfat partition." >&2
-    root=$(blkid -o full -s 'TYPE' | grep -v "vfat" | cut -d: -f1)
-fi
-
-fsck -p /mnt/root || rescue
+fsck -p "$root" || rescue
 
 mount -o ro $(findfs "$root") /mnt/root || rescue
 
 umount /proc /sys /dev
 
-exec switch_root /mnt/root /bin/init
+exec switch_root /mnt/root "$init"
