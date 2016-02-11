@@ -73,6 +73,10 @@ $(BUILD)/initramfs.cpio.gz:
 
 pack: $(BUILD)/initramfs.cpio.gz
 
+repack:
+	rm -f $(BUILD)/initramfs.cpio.gz
+	$(MAKE) pack
+
 build: prepare fetch extract $(foreach m,$(make),build/.built-$(m)) pack
 
 clean:
