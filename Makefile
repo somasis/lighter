@@ -61,6 +61,7 @@ build/.built-%: toolchain
 	mkdir -p "$(BUILD)/$*"
 	DESTDIR="$(BUILD)/$*" BUILD="$(BUILD)/root" J="$(JOBS)" sh -e scripts/build/$*
 	cp -R "$(BUILD)/$*"/* "$(BUILD)/root"
+	-[ -d "$(BUILD)"/$* ] && rm -r "$(BUILD)"/$*
 	@touch build/.built-$*
 	@printf "\n"
 
