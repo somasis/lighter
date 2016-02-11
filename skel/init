@@ -1,6 +1,5 @@
 #!/bin/sh
 
-touch /proc/mounts
 mount -t proc proc /proc
 mount -t devtmpfs devtmpfs /dev
 mount -t sysfs sysfs /sys
@@ -13,7 +12,8 @@ arg() {
     echo "$args" | grep -q "^$1$"
 }
 rescue() {
-    sh
+    echo "Entering rescue shell."
+    setsid sh -c 'exec sh </dev/tty1 >/dev/tty1 2>&1'
 }
 
 root=$(var root)
@@ -23,6 +23,8 @@ init=$(var init)
 fsck -p "$root" || rescue
 
 mount -o ro $(findfs "$root") /mnt/root || rescue
+
+arg rescue && rescue
 
 umount /proc /sys /dev
 
