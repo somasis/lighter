@@ -17,12 +17,16 @@ rescue() {
 }
 
 root=$(var root)
+if ! echo "$root" | grep -q '^/dev/';then
+    root=$(findfs "$root")
+fi
 init=$(var init)
 [ -z "$init" ] && init="/sbin/init"
 
 fsck -p "$root" || rescue
 
-mount -o ro $(findfs "$root") /mnt/root || rescue
+mkdir /mnt/root
+mount -o ro "$root" /mnt/root || rescue
 
 arg rescue && rescue
 
