@@ -40,7 +40,7 @@ all:
 		"JOBS"          "$(JOBS)"	\
 		"BUILD"			"$(BUILD)"
 	@printf "\n"
-	@$(MAKE) --no-print-directory buildall
+	@$(MAKE) --no-print-directory build
 
 $(BUILD)/.prepare:
 	@printf "making build directories...\n"
@@ -65,13 +65,12 @@ $(BUILD)/.build-%: $(BUILD)/.toolchain $(BUILD)/.extract-%
 $(BUILD)/initramfs.cpio.gz:
 	cd "$(BUILD)/root" && find . -print0 | cpio --null -ov --format=newc | gzip -9 > "$(BUILD)"/initramfs.cpio.gz
 
-pack:		$(BUILD)/initramfs.cpio.gz
-buildall:		$(foreach m,$(make),$(BUILD)/.build-$(m))
+buildall:	$(foreach m,$(make),$(BUILD)/.build-$(m))
 build:
 	@$(MAKE) --no-print-directory buildall
-	@$(MAKE) --no-print-directory pack
+	@$(MAKE) --no-print-directory "$(BUILD)/initramfs.cpio.gz"
 
 clean:
 	rm -rf downloads archives $(BUILD) toolchain
 
-.PHONY:		all fetch
+.PHONY:		all buildall build clean
