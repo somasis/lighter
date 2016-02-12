@@ -6,7 +6,7 @@ mount -t sysfs sysfs /sys
 
 args=$(tr ' ' '\n' < /proc/cmdline)
 var() {
-    echo "$args" | grep "^$1=" | cut -d= -f2
+    echo "$args" | grep "^$1=" | cut -d= -f2- | tail -1
 }
 arg() {
     echo "$args" | grep -q "^$1$"
