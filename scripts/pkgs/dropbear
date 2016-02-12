@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd archives/dropbear-*
+cd "$ARCHIVES"/dropbear-*
 
 ./configure --prefix=/ --sbindir=/bin --disable-{syslog,shadow,lastlog,utmp,utmpx,wtmp,wtmpx,shared} --enable-static
 make -j$J MULTI=1

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+[ -d "$BUILD" ] || mkdir -p "$BUILD"
+[ -d "$BUILD/root" ] || mkdir "$BUILD/root"
+[ -d "$DOWNLOADS" ] || mkdir "$DOWNLOADS"
+[ -d "$ARCHIVES" ] || mkdir "$ARCHIVES"
+[ -d "$TOOLCHAIN" ] || mkdir "$TOOLCHAIN"
+
+printf "copying skeleton root to %s...\n" "$BUILD/root"
+cp -rf skel/* "$BUILD"/root
+
+touch "$BUILD"/.prepare

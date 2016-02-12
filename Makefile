@@ -6,21 +6,31 @@ CXXFLAGS		?= $(CFLAGS)
 CFLAGS			+= -static
 LDFLAGS			+= -static
 
+JOBS			?= $(shell expr $$(grep -c processor /proc/cpuinfo) + 4)
+
+LIGHTER			?= $(PWD)
+ARCHIVES		?= $(LIGHTER)/archives
+BUILD			?= $(LIGHTER)/build
+CONFIGS			?= $(LIGHTER)/configs
+DOWNLOADS		?= $(LIGHTER)/downloads
+TOOLCHAIN		?= $(LIGHTER)/toolchain
+
+PATH			+=:$(TOOLCHAIN)
 export CFLAGS
 export CXXFLAGS
 export LDFLAGS
+export JOBS
+export LIGHTER
+export ARCHIVES
+export BUILD
+export CONFIGS
+export DOWNLOADS
+export TOOLCHAIN
+export PATH
 
-JOBS			= $$(expr $$(grep -c processor /proc/cpuinfo) + 4)
-
-BUILD			?= $(PWD)/build
-
-PATH			+= :$(PWD)/toolchain
-
-urls            =	\
-	http://busybox.net/downloads/busybox-1.24.1.tar.bz2					\
-	https://matt.ucc.asn.au/dropbear/releases/dropbear-2015.71.tar.bz2
-
-make			= busybox dropbear
+make            =	\
+	busybox=http=//busybox.net/downloads/busybox-1.24.1.tar.bz2					\
+	dropbear=https=//matt.ucc.asn.au/dropbear/releases/dropbear-2015.71.tar.bz2
 
 all:
 	@printf "lighter $(VERSION)\n\n"
@@ -30,58 +40,38 @@ all:
 		"JOBS"          "$(JOBS)"	\
 		"BUILD"			"$(BUILD)"
 	@printf "\n"
-	@$(MAKE) build
+	@$(MAKE) --no-print-directory buildall
 
-toolchain:
+$(BUILD)/.prepare:
+	@printf "making build directories...\n"
+	@sh -e scripts/prepare
+	@printf "\n"
+
+$(BUILD)/.toolchain: $(BUILD)/.prepare
 	@printf "making any needed toolchain links...\n"
 	@sh -e scripts/toolchain
-	@printf "\n"
-#	@for d in $(dirs);do echo "mkdir -p $(BUILD)/$$d"; [ -d "$$d" ] || mkdir -p $(BUILD)/"$$d";done
-
-prepare: toolchain skel
-	@printf "making build directories...\n"
-	-mkdir -p "$(BUILD)" >/dev/null 2>&1
-	-mkdir "$(BUILD)"/root >/dev/null 2>&1
-	@printf "copying skeleton root to %s...\n" "$(BUILD)"
-	cp -r skel/* "$(BUILD)"/root/
+	@touch "$(BUILD)"/.toolchain
 	@printf "\n"
 
-fetch: prepare
-	@printf "fetching all needed files...\n"
-	@sh -e scripts/fetch $(urls)
-	@printf "\n"
+$(BUILD)/.fetch-%: $(BUILD)/.prepare
+	@sh -e scripts/fetch "$*"
 
-extract: fetch
-	@printf "extracting downloaded files...\n"
-	@sh -e scripts/extract $(urls)
-	@printf "\n"
+$(BUILD)/.extract-%: $(BUILD)/.fetch-%
+	@sh -e scripts/extract "$*"
 
-build/.built-%: toolchain
-	@printf "building %s...\n" "$*"
-	mkdir -p "$(BUILD)/$*"
-	DESTDIR="$(BUILD)/$*" BUILD="$(BUILD)/root" J="$(JOBS)" sh -e scripts/build/$*
-	cp -R "$(BUILD)/$*"/* "$(BUILD)/root"
-	-[ -d "$(BUILD)"/$* ] && rm -r "$(BUILD)"/$*
-	@touch build/.built-$*
-	@printf "\n"
-
-clean-%:
-	@printf "cleaning archives/%s...\n" "$*"
-	rm -rf archives/"$*"*
+$(BUILD)/.build-%: $(BUILD)/.toolchain $(BUILD)/.extract-%
+	@sh -e scripts/build "$*"
 
 $(BUILD)/initramfs.cpio.gz:
 	cd "$(BUILD)/root" && find . -print0 | cpio --null -ov --format=newc | gzip -9 > "$(BUILD)"/initramfs.cpio.gz
 
-pack: $(BUILD)/initramfs.cpio.gz
-
-repack:
-	rm -f $(BUILD)/initramfs.cpio.gz
-	$(MAKE) pack
-
-build: prepare fetch extract $(foreach m,$(make),build/.built-$(m)) pack
+pack:		$(BUILD)/initramfs.cpio.gz
+buildall:		$(foreach m,$(make),$(BUILD)/.build-$(m))
+build:
+	@$(MAKE) --no-print-directory buildall
+	@$(MAKE) --no-print-directory pack
 
 clean:
 	rm -rf downloads archives $(BUILD) toolchain
 
-.PHONY:	clean all prepare fetch extract build pack
-
+.PHONY:		all fetch

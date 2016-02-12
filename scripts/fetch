@@ -1,13 +1,17 @@
 #!/bin/sh
 
-urls="$@"
+pkg=$(echo "$1" | cut -d'=' -f1)
+urls=$(echo "$1" | cut -d'=' -f2- | tr '=' ':')
 
-[ -d downloads ] || mkdir downloads
-cd downloads
+[ -f "$BUILD"/.fetch-"$pkg" ] && exit 0
+cd "$DOWNLOADS"
+printf "fetching %s...\n" "$pkg"
 for url in ${urls};do
     u=$(echo "$url" | sed 's|.*/||g;s/\\?.*//')
-    echo "$url"
-    if [ ! -f "$u" ];then
+    echo "    $url"
+    if [ ! -f "$u" ] && [ ! -f "$BUILD"/.fetch-"$u" ];then
         curl -L#O "$url"
     fi
 done
+touch "$BUILD"/.fetch-"$pkg"
+printf "\n"

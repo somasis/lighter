@@ -1,0 +1,18 @@
+#!/bin/sh
+
+pkg=$(echo "$1" | cut -d'=' -f1 | tr '=' ':')
+
+export DESTDIR="$BUILD"/"$pkg"
+export J="$JOBS"
+[ -d "$BUILD"/"$pkg" ] || mkdir "$BUILD"/"$pkg"
+[ -f "$BUILD"/.build-"$pkg" ] && exit 0
+printf "building %s...\n" "$pkg"
+printf "%-20s%-20s\n"   \
+    "DESTDIR"   "$DESTDIR"  \
+    "BUILD"     "$BUILD"    \
+    "JOBS"      "$J"
+sh -e scripts/pkgs/"$pkg"
+cp -rf "$BUILD"/"$pkg"/* "$BUILD"/root/
+rm -rf "$BUILD"/"$pkg"
+touch "$BUILD"/.build-"$pkg"
+printf '\n'

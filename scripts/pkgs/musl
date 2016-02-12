@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd archives/musl-*
+cd "$ARCHIVES"/musl-*
 
 ./configure --prefix=/ --disable-gcc-wrapper --enable-static --disable-shared
 make -j$J

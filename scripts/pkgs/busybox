@@ -1,8 +1,8 @@
 #!/bin/sh
 
-cd archives/busybox-*
+cd "$ARCHIVES"/busybox-*
 
-cp ../../configs/busybox ./.config
+cp "$CONFIGS"/busybox ./.config
 make -j$J V=2 CC=${CC} HOSTCC=${CC}
 install -D busybox "$DESTDIR"/bin/busybox
 for bin in $("$DESTDIR"/bin/busybox --list);do

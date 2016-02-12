@@ -6,8 +6,7 @@ toolchain="
     cc c++ cpp
 "
 
-[ -d toolchain ] || mkdir toolchain
-
+cd "$TOOLCHAIN"
 for tc in $toolchain;do
     tc_clean=$(echo "$tc" | tr '+' 'x')
     tc_var=$(echo "$tc_clean" | tr '[a-z]' '[A-Z]')
@@ -15,15 +14,16 @@ for tc in $toolchain;do
     tc_set=$(eval echo $(echo \$$(eval echo "\$tc_var")))
     if [ ! -z "$tc_set" ];then
         echo "$tc_set -> $tc"
-        ln -sf $(which "$tc_set") toolchain/"$tc"
+        ln -sf $(which "$tc_set") "$tc"
     else
         if [ ! -z "$CHOST" ];then
-            if which $CHOST-"$tc" >/dev/null 2>&1;then
+            if which "$CHOST-$tc" >/dev/null 2>&1;then
                 echo "$CHOST-$tc -> $tc"
-                ln -sf $(which "$CHOST-$tc") toolchain/"$tc"
+                ln -sf $(which "$CHOST-$tc") "$tc"
             fi
         fi
         continue
     fi
 done
 
+touch "$BUILD"/.toolchain

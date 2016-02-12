@@ -1,16 +1,21 @@
 #!/bin/sh
 
-urls="$@"
+pkg=$(echo "$1" | cut -d'=' -f1)
+archives=$(echo "$@" | cut -d'=' -f2- | tr '=' ':')
 
-[ -d archives ] || mkdir archives
-cd archives
-for url in ${urls};do
-    u=$(echo "$url" | sed 's|.*/||g;s/\\?.*//')
-    echo "$u"
-    [ -d "$u" ] && rm -rf "$u"
-    case "$u" in
+[ -f "$BUILD"/.extract-"$pkg" ] && exit 0
+cd "$ARCHIVES"
+printf "extracting %s...\n" "$pkg"
+for archive in ${archives};do
+    a=$(echo "$archive" | sed 's|.*/||g;s/\\?.*//')
+    echo "    $a"
+    [ -d "$a" ] && rm -rf "$a"
+    [ -f "$BUILD"/.extract-"$a" ] && continue
+    case "$a" in
         *.tar|*.tar.gz|*.tgz|*.txz|*.tar.xz|*.tar.bz2)
-            tar xf ../downloads/"$u"
+            tar xf ../downloads/"$a"
         ;;
     esac
 done
+touch "$BUILD"/.extract-"$pkg"
+printf "\n"
