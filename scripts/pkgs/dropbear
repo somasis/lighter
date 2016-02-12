@@ -2,7 +2,7 @@
 
 cd "$ARCHIVES"/dropbear-*
 
-./configure --prefix=/ --sbindir=/bin --disable-{syslog,shadow,lastlog,utmp,utmpx,wtmp,wtmpx,shared} --enable-static
+./configure --prefix=/ --sbindir=/bin --disable-{syslog,shadow,lastlog,utmp,utmpx,wtmp,wtmpx}
 make -j$J MULTI=1
 make -j$J MULTI=1 install
 cd "$DESTDIR"/bin
